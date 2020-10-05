@@ -14,19 +14,32 @@ app = dash.Dash()
 
 app.layout = html.Div([
     html.Div([
-        html.H1('Stock Pic'),
-
-        html.Div(['Ticker: ',
-            dcc.Input(id='input-on-submit', value='TSLA', type='text')]),
+        html.H4('Stock Pic')
+    ]),
+    html.Div(['Ticker: ',
+        #html.H6('Ticker: '),
+        dcc.Input(
+            id='input-on-submit', 
+            value='TSLA', 
+            type='text'
+        )
+    ], style={'font-size': 'large'}),
     
-        dcc.Graph(id='my-graph'),
-        html.P('')
-    ],style={'width': '60%', 'display': 'inline-block'}),
     html.Div([
-        html.Table(id='my-table'),
-        html.P(''),
-    ], style={'width': '35%', 'float': 'right', 'display': 'inline-block'}),
-    ])
+        html.H6('Key Metrics'),
+        html.Table(id='my-table')
+    ], style={'width': '40%', 'display': 'inline-block'}),
+    
+    html.Div([
+        html.H6('Observations'),
+        html.Table(id='placeholder')
+    ], style={'width': '55%', 'float': 'right', 'display': 'inline-block'}),
+
+    html.Div([
+        html.H6('Price History'),
+        dcc.Graph(id='my-graph')
+    ], style={'width': '100%', 'display': 'inline-block'})
+])
 
 # for the graph
 @app.callback(
@@ -61,7 +74,7 @@ def generate_table(submits,inputted_value):
         summary_dict = yf.Ticker(inputted_value).info
         industry = summary_dict['industry']
         marketCap = summary_dict['marketCap']
-        return [html.Tr(html.Th('Quick Take'))] + [html.Tr(html.Td(industry))] + [html.Tr(html.Td(marketCap))]
+        return [html.Tr(html.Td(industry))] + [html.Tr(html.Td(marketCap))]
 
 
     else:
