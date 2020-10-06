@@ -17,7 +17,6 @@ app.layout = html.Div([
         html.H4('Stock Pic')
     ]),
     html.Div(['Ticker: ',
-        #html.H6('Ticker: '),
         dcc.Input(
             id='input-on-submit', 
             value='TSLA', 
@@ -28,12 +27,12 @@ app.layout = html.Div([
     html.Div([
         html.H6('Key Metrics'),
         html.Table(id='my-table')
-    ], style={'width': '40%', 'display': 'inline-block'}),
+    ], style={'width': '60%', 'display': 'inline-block'}),
     
     html.Div([
         html.H6('Observations'),
         html.Table(id='placeholder')
-    ], style={'width': '55%', 'float': 'right', 'display': 'inline-block'}),
+    ], style={'width': '30%', 'float': 'right', 'display': 'inline-block'}),
 
     html.Div([
         html.H6('Price History'),
@@ -74,9 +73,10 @@ def generate_table(submits,inputted_value):
         summary_dict = yf.Ticker(inputted_value).info
         industry = summary_dict['industry']
         marketCap = summary_dict['marketCap']
-        return [html.Tr(html.Td(industry))] + [html.Tr(html.Td(marketCap))]
-
-
+        desc = summary_dict['longBusinessSummary']
+        return [html.Tr([html.Td('Industry'),html.Td(industry)])] + \
+        [html.Tr([html.Td('Market Cap'),html.Td(marketCap)])] + \
+        [html.Tr([html.Td('Company Description'),html.Td(desc)])]   
     else:
         return [html.Tr(html.Th('Quick Take'))]
 
