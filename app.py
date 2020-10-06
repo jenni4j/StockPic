@@ -28,17 +28,22 @@ app.layout = html.Div([
     
     html.Div([
         html.H6('Key Metrics'),
-        html.Table(id='my-table')
-    ], style={'width': '60%', 'display': 'inline-block'}),
+        html.Table(id='metrics-table')
+    ], style={'width': '40%', 'display': 'inline-block'}),
     
     html.Div([
         html.H6('Observations'),
-        html.Table(id='placeholder')
-    ], style={'width': '30%', 'float': 'right', 'display': 'inline-block'}),
+        html.Table(id='obs-table')
+    ], style={'width': '40%', 'float': 'right', 'display': 'inline-block'}),
+
+    html.Div([
+        html.H6('Company Description'),
+        html.Table(id='desc-table')
+    ], style={'width': '100%', 'display': 'inline-block'}),
 
     html.Div([
         html.H6('Price History'),
-        dcc.Graph(id='my-graph')
+        dcc.Graph(id='price-graph')
     ], style={'width': '100%', 'display': 'inline-block'})
 ])
 
@@ -58,7 +63,7 @@ def multiplize(number):
 
 # for the graph
 @app.callback(
-    Output('my-graph', 'figure'),
+    Output('price-graph', 'figure'),
     [Input('input-on-submit', 'n_submit')],
     [State('input-on-submit','value')])
 
@@ -78,15 +83,16 @@ def update_graph(submits,inputted_value):
             'data': []
         }
 
-# for the quick take table
+# for the key metrics table
 @app.callback(
-    Output('my-table', 'children'),
+    Output('metrics-table', 'children'),
     [Input('input-on-submit', 'n_submit')],
     [State('input-on-submit','value')])
 
 def generate_table(submits,inputted_value):
     if inputted_value:
         summary_dict = yf.Ticker(inputted_value).info
+        name = summary_dict['longName']
         industry = summary_dict['industry']
         marketCap = summary_dict['marketCap']
         marketCap = locale.currency(marketCap, grouping=True)
@@ -100,8 +106,8 @@ def generate_table(submits,inputted_value):
         earnGrowth = percentize(summary_dict['earningsQuarterlyGrowth'])
         divYield = percentize(summary_dict['dividendYield'])
         payout = percentize(summary_dict['payoutRatio'])
-        desc = summary_dict['longBusinessSummary']
-        return [html.Tr([html.Td('Industry'),html.Td(industry)])] + \
+        return [html.Tr([html.Td('Company'),html.Td(name)])] + \
+        [html.Tr([html.Td('Industry'),html.Td(industry)])] + \
         [html.Tr([html.Td('Market Cap'),html.Td(marketCap)])] + \
         [html.Tr([html.Td('Trailing P/E'),html.Td(trailPE)])] + \
         [html.Tr([html.Td('Forward P/E'),html.Td(fwdPE)])] + \
@@ -111,10 +117,26 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Quarterly Revenue Growth'),html.Td(revGrowth)])] + \
         [html.Tr([html.Td('Quarterly Earnings Growth'),html.Td(earnGrowth)])] + \
         [html.Tr([html.Td('Dividend Yield'),html.Td(divYield)])] + \
-        [html.Tr([html.Td('Payout Ratio'),html.Td(payout)])] + \
-        [html.Tr([html.Td('Company Description'),html.Td(desc)])]   
+        [html.Tr([html.Td('Payout Ratio'),html.Td(payout)])]
     else:
         return [html.Tr(html.Th(''))]
+
+
+# for the company description table
+@app.callback(
+    Output('desc-table', 'children'),
+    [Input('input-on-submit', 'n_submit')],
+    [State('input-on-submit','value')])
+
+def generate_table(submits,inputted_value):
+    if inputted_value:
+        summary_dict = yf.Ticker(inputted_value).info
+        desc = summary_dict['longBusinessSummary']
+        return [html.Tr(html.Td(desc))]   
+    else:
+        return [html.Tr(html.Th(''))]
+
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
