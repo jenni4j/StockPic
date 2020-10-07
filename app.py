@@ -8,6 +8,7 @@ from datetime import datetime as dt
 import yfinance as yf
 import locale
 l = locale.setlocale(locale.LC_ALL, 'en_US.utf-8')
+import numpy as np
 
 
 app = dash.Dash()
@@ -34,7 +35,7 @@ app.layout = html.Div([
     html.Div([
         html.H6('Observations'),
         html.Table(id='obs-table')
-    ], style={'width': '40%', 'float': 'right', 'display': 'inline-block'}),
+    ], style={'width': '60%', 'float': 'right', 'display': 'inline-block'}),
 
     html.Div([
         html.H6('Company Description'),
@@ -49,13 +50,13 @@ app.layout = html.Div([
 
 # helper functions
 def percentize(number):
-    if type(number) == int or type(number) == float:
+    if type(number) == int or type(number) == float or isinstance(number,np.floating):
         return "{:.2%}".format(number)
     else:
         return number
 
 def multiplize(number):
-    if type(number) == int or type(number) == float:
+    if type(number) == int or type(number) == float or isinstance(number,np.floating):
         return str(round(number,2)) + 'x'
     else:
         return number    
@@ -111,6 +112,7 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Market Cap'),html.Td(marketCap)])] + \
         [html.Tr([html.Td('Trailing P/E'),html.Td(trailPE)])] + \
         [html.Tr([html.Td('Forward P/E'),html.Td(fwdPE)])] + \
+        [html.Tr([html.Td('Enterprise Value/EBITDA'),html.Td(evToEbitda)])] + \
         [html.Tr([html.Td('Price/Sales'),html.Td(priceToSales)])] + \
         [html.Tr([html.Td('Price/Book'),html.Td(priceToBook)])] + \
         [html.Tr([html.Td('Profit Margin'),html.Td(profitMargin)])] + \
@@ -118,6 +120,25 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Quarterly Earnings Growth'),html.Td(earnGrowth)])] + \
         [html.Tr([html.Td('Dividend Yield'),html.Td(divYield)])] + \
         [html.Tr([html.Td('Payout Ratio'),html.Td(payout)])]
+    else:
+        return [html.Tr(html.Th(''))]
+
+
+# for observations table
+@app.callback(
+    Output('obs-table', 'children'),
+    [Input('input-on-submit', 'n_submit')],
+    [State('input-on-submit','value')])
+
+def generate_table(submits,inputted_value):
+    if inputted_value:
+        bs_df = yf.Ticker(inputted_value).balance_sheet
+        currentRatio = bs_df.loc['Total Current Assets'][0]/bs_df.loc['Total Current Liabilities'][0]
+        if currentRatio < 1:
+            crWarning = 'Warning: Current Ratio indicates Assets do not cover Liabilities'
+        else:
+            crWarning = ''
+        return [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])]
     else:
         return [html.Tr(html.Th(''))]
 
