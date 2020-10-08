@@ -136,17 +136,26 @@ def generate_table(submits,inputted_value):
     if inputted_value:
         bs_df = yf.Ticker(inputted_value).balance_sheet
         cf_df = yf.Ticker(inputted_value).cashflow
+        is_df = yf.Ticker(inputted_value).financials
         earningsQual = (cf_df.loc['Total Cash From Operating Activities'][0] - cf_df.loc['Capital Expenditures'][0])/cf_df.loc['Net Income'][0]
-        if earningsQual < 0.5 or earningsQual > 1.5:
-            eqWarning = 'Warning: Free Cashflow appears to be more than 50% different than net income'
+        if earningsQual < 0.8:
+            eqWarning = 'Warning: Free Cashflow appears to be less than 80% of net income'
         else:
             eqWarning = ''
+        revQualCurr = bs_df.loc['Net Receivables'][0]/is_df.loc['Total Revenue'][0]
+        revQualPrev = bs_df.loc['Net Receivables'][1]/is_df.loc['Total Revenue'][1]
+        revenueQual = revQualCurr/revQualPrev - 1
+        if revenueQual > 0:
+            rqWarning = 'Warning: Receivables seem to be becoming a larger component of Revenue'
+        else:
+            rqWarning = ''
         currentRatio = bs_df.loc['Total Current Assets'][0]/bs_df.loc['Total Current Liabilities'][0]
         if currentRatio < 1:
             crWarning = 'Warning: Current Ratio indicates Assets do not cover Liabilities'
         else:
             crWarning = ''
         return [html.Tr([html.Td('Earnings Quality'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
+        [html.Tr([html.Td('Revenue Quality'),html.Td(percentize(revenueQual)),html.Td(rqWarning)])] + \
         [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])]
     else:
         return [html.Tr(html.Th(''))]
