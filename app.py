@@ -59,7 +59,7 @@ def multiplize(number):
     if type(number) == int or type(number) == float or isinstance(number,np.floating):
         return str(round(number,2)) + 'x'
     else:
-        return number    
+        return number   
 
 
 # for the graph
@@ -93,21 +93,23 @@ def update_graph(submits,inputted_value):
 def generate_table(submits,inputted_value):
     if inputted_value:
         summary_dict = yf.Ticker(inputted_value).info
-        name = summary_dict['longName']
-        industry = summary_dict['industry']
-        marketCap = summary_dict['marketCap']
+        name = summary_dict.get('longName','')
+        sector = summary_dict.get('sector','')
+        industry = summary_dict.get('industry','')
+        marketCap = summary_dict.get('marketCap','')
         marketCap = locale.currency(marketCap, grouping=True)
-        trailPE = multiplize(summary_dict['trailingPE'])
-        fwdPE = multiplize(summary_dict['forwardPE'])
-        evToEbitda = multiplize(summary_dict['enterpriseToEbitda'])
-        priceToSales = multiplize(summary_dict['priceToSalesTrailing12Months'])
-        priceToBook = multiplize(summary_dict['priceToBook'])
-        profitMargin = percentize(summary_dict['profitMargins'])
-        revGrowth = percentize(summary_dict['revenueQuarterlyGrowth'])
-        earnGrowth = percentize(summary_dict['earningsQuarterlyGrowth'])
-        divYield = percentize(summary_dict['dividendYield'])
-        payout = percentize(summary_dict['payoutRatio'])
+        trailPE = multiplize(summary_dict.get('trailingPE',''))
+        fwdPE = multiplize(summary_dict.get('forwardPE',''))
+        evToEbitda = multiplize(summary_dict.get('enterpriseToEbitda',''))
+        priceToSales = multiplize(summary_dict.get('priceToSalesTrailing12Months',''))
+        priceToBook = multiplize(summary_dict.get('priceToBook',''))
+        profitMargin = percentize(summary_dict.get('profitMargins',''))
+        revGrowth = percentize(summary_dict.get('revenueQuarterlyGrowth',''))
+        earnGrowth = percentize(summary_dict.get('earningsQuarterlyGrowth',''))
+        divYield = percentize(summary_dict.get('dividendYield',''))
+        payout = percentize(summary_dict.get('payoutRatio',''))
         return [html.Tr([html.Td('Company'),html.Td(name)])] + \
+        [html.Tr([html.Td('Sector'),html.Td(sector)])] + \
         [html.Tr([html.Td('Industry'),html.Td(industry)])] + \
         [html.Tr([html.Td('Market Cap'),html.Td(marketCap)])] + \
         [html.Tr([html.Td('Trailing P/E'),html.Td(trailPE)])] + \
@@ -133,12 +135,19 @@ def generate_table(submits,inputted_value):
 def generate_table(submits,inputted_value):
     if inputted_value:
         bs_df = yf.Ticker(inputted_value).balance_sheet
+        cf_df = yf.Ticker(inputted_value).cashflow
+        earningsQual = (cf_df.loc['Total Cash From Operating Activities'][0] - cf_df.loc['Capital Expenditures'][0])/cf_df.loc['Net Income'][0]
+        if earningsQual < 0.5 or earningsQual > 1.5:
+            eqWarning = 'Warning: Free Cashflow appears to be more than 50% different than net income'
+        else:
+            eqWarning = ''
         currentRatio = bs_df.loc['Total Current Assets'][0]/bs_df.loc['Total Current Liabilities'][0]
         if currentRatio < 1:
             crWarning = 'Warning: Current Ratio indicates Assets do not cover Liabilities'
         else:
             crWarning = ''
-        return [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])]
+        return [html.Tr([html.Td('Earnings Quality'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
+        [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])]
     else:
         return [html.Tr(html.Th(''))]
 
