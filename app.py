@@ -102,7 +102,6 @@ def generate_table(submits,inputted_value):
         fwdPE = multiplize(summary_dict.get('forwardPE',''))
         evToEbitda = multiplize(summary_dict.get('enterpriseToEbitda',''))
         priceToSales = multiplize(summary_dict.get('priceToSalesTrailing12Months',''))
-        priceToBook = multiplize(summary_dict.get('priceToBook',''))
         profitMargin = percentize(summary_dict.get('profitMargins',''))
         revGrowth = percentize(summary_dict.get('revenueQuarterlyGrowth',''))
         earnGrowth = percentize(summary_dict.get('earningsQuarterlyGrowth',''))
@@ -116,7 +115,6 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Forward P/E'),html.Td(fwdPE)])] + \
         [html.Tr([html.Td('Enterprise Value/EBITDA'),html.Td(evToEbitda)])] + \
         [html.Tr([html.Td('Price/Sales'),html.Td(priceToSales)])] + \
-        [html.Tr([html.Td('Price/Book'),html.Td(priceToBook)])] + \
         [html.Tr([html.Td('Profit Margin'),html.Td(profitMargin)])] + \
         [html.Tr([html.Td('Quarterly Revenue Growth'),html.Td(revGrowth)])] + \
         [html.Tr([html.Td('Quarterly Earnings Growth'),html.Td(earnGrowth)])] + \
@@ -150,13 +148,25 @@ def generate_table(submits,inputted_value):
         else:
             rqWarning = ''
         currentRatio = bs_df.loc['Total Current Assets'][0]/bs_df.loc['Total Current Liabilities'][0]
-        if currentRatio < 1:
+        if currentRatio < 1.5:
             crWarning = 'Warning: Current Ratio indicates Assets do not cover Liabilities'
         else:
             crWarning = ''
+        icr = is_df.loc['Ebit'][0]/is_df.loc['Interest Expense'][0]
+        if icr < 6:
+            icrWarning = 'Warning: Earnings only cover less than 6 times Interest Expenses'
+        else:
+            icrWarning = ''
+        roe = is_df.loc['Net Income'][0]/bs_df.loc['Total Stockholder Equity'][0]
+        if roe < 5:
+            roeWarning = 'Warning: Return on Equity is less than 5%'
+        else:
+            roeWarning = ''
         return [html.Tr([html.Td('Earnings Quality'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
         [html.Tr([html.Td('Revenue Quality'),html.Td(percentize(revenueQual)),html.Td(rqWarning)])] + \
-        [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])]
+        [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])] + \
+        [html.Tr([html.Td('Interest Coverage Ratio'),html.Td(multiplize(icr)),html.Td(icrWarning)])] + \
+        [html.Tr([html.Td('Return on Equity'),html.Td(percentize(roe)),html.Td(roeWarning)])]
     else:
         return [html.Tr(html.Th(''))]
 
