@@ -137,7 +137,7 @@ def generate_table(submits,inputted_value):
         is_df = yf.Ticker(inputted_value).financials
         earningsQual = (cf_df.loc['Total Cash From Operating Activities'][0] - cf_df.loc['Capital Expenditures'][0])/cf_df.loc['Net Income'][0]
         if earningsQual < 0.8:
-            eqWarning = 'Warning: Free Cashflow appears to be less than 80% of net income'
+            eqWarning = 'Warning: Free Cashflow appears to be less than 0.8x of net income'
         else:
             eqWarning = ''
         revQualCurr = bs_df.loc['Net Receivables'][0]/is_df.loc['Total Revenue'][0]
@@ -149,12 +149,17 @@ def generate_table(submits,inputted_value):
             rqWarning = ''
         currentRatio = bs_df.loc['Total Current Assets'][0]/bs_df.loc['Total Current Liabilities'][0]
         if currentRatio < 1.5:
-            crWarning = 'Warning: Current Ratio indicates Assets do not cover Liabilities'
+            crWarning = 'Warning: Current Liabilities are less than 1.5x of Current Assets'
         else:
             crWarning = ''
+        debtToEquity = bs_df.loc['Total Liab'][0]/(bs_df.loc['Total Assets'][0] - bs_df.loc['Total Liab'][0])
+        if debtToEquity > 1.1:
+            deWarning = 'Warning: Debt is greater than 1.1x of Equity'
+        else:
+            deWarning = ''
         icr = is_df.loc['Ebit'][0]/is_df.loc['Interest Expense'][0]
         if icr < 6:
-            icrWarning = 'Warning: Earnings only cover less than 6 times Interest Expenses'
+            icrWarning = 'Warning: Earnings only cover less than 6x Interest Expenses'
         else:
             icrWarning = ''
         roe = is_df.loc['Net Income'][0]/bs_df.loc['Total Stockholder Equity'][0]
@@ -165,6 +170,7 @@ def generate_table(submits,inputted_value):
         return [html.Tr([html.Td('Earnings Quality'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
         [html.Tr([html.Td('Revenue Quality'),html.Td(percentize(revenueQual)),html.Td(rqWarning)])] + \
         [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])] + \
+        [html.Tr([html.Td('Debt to Equity'),html.Td(multiplize(debtToEquity)),html.Td(deWarning)])] + \
         [html.Tr([html.Td('Interest Coverage Ratio'),html.Td(multiplize(icr)),html.Td(icrWarning)])] + \
         [html.Tr([html.Td('Return on Equity'),html.Td(percentize(roe)),html.Td(roeWarning)])]
     else:
