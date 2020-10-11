@@ -2,6 +2,7 @@
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+#import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from pandas_datareader import data as web
 from datetime import datetime as dt
@@ -13,11 +14,9 @@ import numpy as np
 
 app = dash.Dash()
 
-
-
 app.layout = html.Div([
     html.Div([
-        html.H4('Stock Pic')
+        html.H4('StockPic')
     ]),
     html.Div(['Ticker: ',
         dcc.Input(
@@ -34,7 +33,19 @@ app.layout = html.Div([
     
     html.Div([
         html.H6('Observations'),
-        html.Table(id='obs-table')
+        html.Table(id='obs-table'),
+        dcc.Textarea(
+            id='inv-thesis-textarea',
+            value='Investment Thesis:',
+            style={'width': '100%', 'height': 80},),
+        dcc.Textarea(
+            id='comp-adv-textarea',
+            value='Competitive Advantages:',
+            style={'width': '100%', 'height': 80},),
+        dcc.Textarea(
+            id='risk-textarea',
+            value='Risks & Bear Case:',
+            style={'width': '100%', 'height': 80},)
     ], style={'width': '60%', 'float': 'right', 'display': 'inline-block'}),
 
     html.Div([
@@ -174,6 +185,17 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Interest Coverage Ratio'),html.Td(multiplize(icr)),html.Td(icrWarning)])] + \
         [html.Tr([html.Td('Return on Equity'),html.Td(percentize(roe)),html.Td(roeWarning)])]
     else:
+        return [html.Tr(html.Th(''))]
+
+
+# for the comp advantage & risks inputs
+@app.callback(
+    Output('test-table', 'children'),
+    [Input('input-on-submit', 'n_submit')],
+    [State('input-on-submit','value')])
+
+def generate_table(submits,inputted_value):
+    if inputted_value:
         return [html.Tr(html.Th(''))]
 
 
