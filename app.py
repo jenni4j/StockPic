@@ -177,7 +177,7 @@ def generate_table(submits,inputted_value):
             icrWarning = 'Warning: Earnings only cover less than 6x Interest Expenses'
         else:
             icrWarning = ''
-        roe = is_df.loc['Net Income'][0]/bs_df.loc['Total Stockholder Equity'][0]
+        roe = (is_df.loc['Net Income'][0]/bs_df.loc['Total Stockholder Equity'][0])*100
         if roe < 5:
             roeWarning = 'Warning: Return on Equity is less than 5%'
         else:
