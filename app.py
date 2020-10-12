@@ -11,8 +11,10 @@ import locale
 l = locale.setlocale(locale.LC_ALL, 'en_US.utf-8')
 import numpy as np
 
+external_stylesheets=["assets/stylesheets.css"]
 
-app = dash.Dash()
+
+app = dash.Dash(__name__,external_stylesheets=external_stylesheets)
 
 server = app.server
 
