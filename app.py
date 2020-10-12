@@ -14,6 +14,8 @@ import numpy as np
 
 app = dash.Dash()
 
+server = app.server
+
 app.layout = html.Div([
     html.Div([
         html.H4('StockPic')
