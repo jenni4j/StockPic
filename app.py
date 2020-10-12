@@ -188,16 +188,6 @@ def generate_table(submits,inputted_value):
         return [html.Tr(html.Th(''))]
 
 
-# for the comp advantage & risks inputs
-@app.callback(
-    Output('test-table', 'children'),
-    [Input('input-on-submit', 'n_submit')],
-    [State('input-on-submit','value')])
-
-def generate_table(submits,inputted_value):
-    if inputted_value:
-        return [html.Tr(html.Th(''))]
-
 
 # for the company description table
 @app.callback(
