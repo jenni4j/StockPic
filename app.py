@@ -130,11 +130,11 @@ def generate_table(submits,inputted_value):
         [html.Tr([html.Td('Forward P/E'),html.Td(fwdPE)])] + \
         [html.Tr([html.Td('Enterprise Value/EBITDA'),html.Td(evToEbitda)])] + \
         [html.Tr([html.Td('Price/Sales'),html.Td(priceToSales)])] + \
-        [html.Tr([html.Td('Profit Margin'),html.Td(profitMargin)])] + \
+        [html.Tr([html.Td('Profit Margin',title='Gross Profit/Revenue'),html.Td(profitMargin)])] + \
         [html.Tr([html.Td('Quarterly Revenue Growth'),html.Td(revGrowth)])] + \
         [html.Tr([html.Td('Quarterly Earnings Growth'),html.Td(earnGrowth)])] + \
-        [html.Tr([html.Td('Dividend Yield'),html.Td(divYield)])] + \
-        [html.Tr([html.Td('Payout Ratio'),html.Td(payout)])]
+        [html.Tr([html.Td('Dividend Yield',title='Dividend Per Share/Current Share Price'),html.Td(divYield)])] + \
+        [html.Tr([html.Td('Payout Ratio',title='Dividends Paid/Net Income'),html.Td(payout)])]
     else:
         return [html.Tr(html.Th(''))]
 
@@ -182,12 +182,12 @@ def generate_table(submits,inputted_value):
             roeWarning = 'Warning: Return on Equity is less than 5%'
         else:
             roeWarning = ''
-        return [html.Tr([html.Td('Earnings Quality'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
-        [html.Tr([html.Td('Revenue Quality'),html.Td(percentize(revenueQual)),html.Td(rqWarning)])] + \
-        [html.Tr([html.Td('Current Ratio'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])] + \
-        [html.Tr([html.Td('Debt to Equity'),html.Td(multiplize(debtToEquity)),html.Td(deWarning)])] + \
-        [html.Tr([html.Td('Interest Coverage Ratio'),html.Td(multiplize(icr)),html.Td(icrWarning)])] + \
-        [html.Tr([html.Td('Return on Equity'),html.Td(percentize(roe)),html.Td(roeWarning)])]
+        return [html.Tr([html.Td('Earnings Quality',title='(Cash From Operating Activities - Capex)/Net Income'),html.Td(multiplize(earningsQual)),html.Td(eqWarning)])] + \
+        [html.Tr([html.Td('Revenue Quality',title='Q/Q Change in Net Receivables/Total Revenue'),html.Td(percentize(revenueQual)),html.Td(rqWarning)])] + \
+        [html.Tr([html.Td('Current Ratio',title='Current Assets/Current Liabilities'),html.Td(multiplize(currentRatio)),html.Td(crWarning)])] + \
+        [html.Tr([html.Td('Debt to Equity',title='Liabilities/(Assets - Liabilities)'),html.Td(multiplize(debtToEquity)),html.Td(deWarning)])] + \
+        [html.Tr([html.Td('Interest Coverage Ratio',title='EBIT/Interest Expense'),html.Td(multiplize(icr)),html.Td(icrWarning)])] + \
+        [html.Tr([html.Td('Return on Equity',title='Net Income/Shareholder Equity'),html.Td(percentize(roe)),html.Td(roeWarning)])]
     else:
         return [html.Tr(html.Th(''))]
 
