@@ -19,3 +19,5 @@ the stock and some risks that you have noticed about the company
 Company Description: Gives a description of the company
 
 Price History: Stock price over the past 5 years or less if the stock has recently went public
+
+Additional Features: Hovering mouse over a field like 'Revenue Quality' will show the formula used to calculate a metric
